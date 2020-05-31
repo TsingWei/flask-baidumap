@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
+
+		#l-map {
+			height: 100%;
+			width: 78%;
+			float: left;
+			border-right: 2px solid #bcbcbc;
+		}
+
+		#r-result {
+			height: 100%;
+			width: 20%;
+			float: left;
+		}
+	</style>
+	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=EsWQkaE71LoSbycrVZOZGEYNfVmlSxjP"></script>
+	<script src="{{url_for('static',filename='js/jquery-3.3.1.min.js')}}"></script>
+	<title>物联网平台</title>
+</head>
+
+<body>
+	<div id="allmap"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");
+	var point = new BMap.Point(113.99, 22.599);
+	map.centerAndZoom(point, 15);
+	map.enableScrollWheelZoom();   //启用滚轮放大缩小，默认禁用
+	map.enableContinuousZoom();    //启用地图惯性拖拽，默认禁用
+	// 编写自定义函数,创建标注
+	function addMarker(point) {
+		var marker = new BMap.Marker(point);
+		map.addOverlay(marker);
+	}
+	function addMarkers(points) {
+		for (j = 0, len = points.length; j < len; j++) {
+			map.addOverlay(points[j]);
+		}
+	}
+	// 随机向地图添加25个标注
+	var bounds = map.getBounds();
+	var sw = bounds.getSouthWest();
+	var ne = bounds.getNorthEast();
+	var lngSpan = Math.abs(sw.lng - ne.lng);
+	var latSpan = Math.abs(ne.lat - sw.lat);
+	var markers = [];
+	
+	addMarker({{}})
+	// for (var i = 0; i < 25; i++) {
+	// 	var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
+	// 	var marker = new BMap.Marker(point);
+	// 	markers.unshift(marker);
+	// }
+	// addMarkers(markers);
+	$(function () {
+		setInterval(aa, 1000);
+		function aa() {
+			$.ajax({
+				type: "GET",
+				url: "{{ url_for('map_server') }}",
+				dataType: 'json',
+				success: function (result) {
+					if (result.new) {
+						console.log(result);
+						var point = new BMap.Point(result.x, result.y);
+						map.centerAndZoom(point, 15);
+						addMarker(point);
+					} else {
+
+					}
+
+				}
+			});
+		}
+	})
+	$(document).ready(function () {
+		$.ajax({
+			type: "GET",
+			url: "{{ url_for('test') }}",
+			dataType: 'json',
+			success: function (result) {
+				console.log(result);
+			}
+		});
+	});
+</script>
